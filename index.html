@@ -1,4 +1,103 @@
-apps:
-  - name: "Cinejoy & Movy Launcher"
-    url: "https://<your-username>.github.io/vidaa-launcher"
-    icon: "https://<your-username>.github.io/vidaa-launcher/icon.png"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apple TV Streaming Launcher</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d11 url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 40px;
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 28px; font-weight: 700; background: rgba(0,0,0,0.4); padding: 8px 18px; border-radius: 20px; backdrop-filter: blur(10px); }
+    .hero { margin-top: 40px; max-width: 600px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+    .hero h1 { font-size: 48px; margin-bottom: 12px; }
+    .hero p { font-size: 18px; color: #ddd; }
+    .dock-container { display: flex; justify-content: center; width: 100%; margin-bottom: 20px; }
+    .dock {
+      display: flex; gap: 24px; padding: 20px 30px; background: rgba(255, 255, 255, 0.15);
+      border-radius: 32px; backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .tile {
+      width: 180px; height: 110px; border-radius: 20px; background: rgba(255, 255, 255, 0.2);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease-in-out; border: 3px solid transparent; outline: none; text-decoration: none; color: white;
+    }
+    .tile:focus, .tile.active {
+      transform: scale(1.15); border-color: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .tile-title { font-weight: 600; font-size: 18px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo"> tv</div>
+  </div>
+
+  <div class="hero">
+    <h1 id="hero-title">Cinejoy</h1>
+    <p id="hero-desc">Stream the latest movies and TV series in HD with integrated ad shielding.</p>
+  </div>
+
+  <div class="dock-container">
+    <div class="dock">
+      <div class="tile active" tabindex="0" data-url="https://cinejoy.pk/" data-title="Cinejoy" data-desc="Stream the latest movies and TV series in HD with integrated ad shielding.">
+        <span style="font-size: 28px;">🎬</span>
+        <span class="tile-title">Cinejoy</span>
+      </div>
+      <div class="tile" tabindex="0" data-url="https://www.movy.sx/" data-title="Movy" data-desc="Explore popular series, blockbuster movies, and top-rated shows cleanly.">
+        <span style="font-size: 28px;">🍿</span>
+        <span class="tile-title">Movy</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Popup and Overlay Ad Shield
+    window.open = function() { return null; };
+    
+    const tiles = document.querySelectorAll('.tile');
+    let currentIndex = 0;
+
+    function updateHero(tile) {
+      document.getElementById('hero-title').innerText = tile.dataset.title;
+      document.getElementById('hero-desc').innerText = tile.dataset.desc;
+    }
+
+    function focusTile(index) {
+      tiles.forEach(t => t.classList.remove('active'));
+      currentIndex = (index + tiles.length) % tiles.length;
+      tiles[currentIndex].focus();
+      tiles[currentIndex].classList.add('active');
+      updateHero(tiles[currentIndex]);
+    }
+
+    tiles.forEach((tile, index) => {
+      tile.addEventListener('click', () => {
+        window.location.href = tile.dataset.url;
+      });
+      tile.addEventListener('focus', () => {
+        focusTile(index);
+      });
+    });
+
+    // TV Remote D-Pad Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.keyCode === 39) {
+        focusTile(currentIndex + 1);
+      } else if (e.key === 'ArrowLeft' || e.keyCode === 37) {
+        focusTile(currentIndex - 1);
+      } else if (e.key === 'Enter' || e.keyCode === 13) {
+        window.location.href = tiles[currentIndex].dataset.url;
+      }
+    });
+
+    // Initial focus
+    tiles[0].focus();
+  </script>
+</body>
+</html>
